@@ -1,7 +1,20 @@
-FROM alpine:3.4
+FROM mcristinagrosu/bigstepinc_java_8
 
 RUN apk update 
 RUN apk add --no-cache openssh wget tar bash curl unzip
+
+# Apache Kafka
+RUN cd /opt && \
+    mkdir -p kafka
+    wget https://www.apache.org/dyn/closer.cgi?path=/kafka/0.10.1.0/kafka_2.11-0.10.1.0.tgz 
+    
+RUN tar xzvf kafka_2.11-0.10.1.0.tgz && \
+    mv kafka_2.11-0.10.1.0 kafka 
+
+
+
+
+
 
 RUN rm -f /etc/ssh/ssh_host_dsa_key /etc/ssh/ssh_host_rsa_key /root/.ssh/id_rsa
 RUN ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_dsa_key
