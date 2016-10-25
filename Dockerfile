@@ -14,8 +14,15 @@ RUN tar xzvf kafka_2.11-0.10.1.0.tgz && \
     rm -rf kafka_2.11-0.10.1.0.tgz && \
     rm -rf jdk1.8.0_92
     
-ENV KAFKA_HOME /opt/kafka    
+ENV KAFKA_HOME /opt/kafka  
+ADD entrypoint.sh /opt/entrypoint.sh
 
+
+
+
+
+
+ENTRYPOINT ["/opt/entrypoint.sh"]
     
 
 
