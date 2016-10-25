@@ -18,6 +18,10 @@ RUN cp -R kafka_2.11-0.10.1.0/* kafka  && \
     
 ENV KAFKA_HOME /opt/kafka  
 
+ADD script.sh /opt/
+RUN bash /opt/script.sh
+RUN rm /opt/script.sh
+
 ADD entrypoint.sh /opt/entrypoint.sh
 
 RUN apk del wget tar curl unzip
