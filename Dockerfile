@@ -8,8 +8,9 @@ RUN cd /opt && \
     mkdir -p kafka && \
     wget http://apache.mirror.anlx.net/kafka/0.10.1.0/kafka_2.11-0.10.1.0.tgz 
     
-RUN tar xzvf kafka_2.11-0.10.1.0.tgz && \
-    cp -R kafka_2.11-0.10.1.0/* kafka  && \
+RUN tar xzvf kafka_2.11-0.10.1.0.tgz 
+
+RUN cp -R kafka_2.11-0.10.1.0/* kafka  && \
     rm -rf kafka_2.11-0.10.1.0 && \
     rm -rf kafka_2.11-0.10.1.0.tgz && \
     rm -rf jdk1.8.0_92
