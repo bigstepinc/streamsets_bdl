@@ -1,15 +1,22 @@
 FROM mcristinagrosu/bigstepinc_java_8
 
 RUN apk update 
-RUN apk add --no-cache openssh wget tar bash curl unzip
+RUN apk add --no-cache openssh wget tar bash curl unzip alpine-sdk
 
 # Apache Kafka
 RUN cd /opt && \
     mkdir -p kafka
-    wget https://www.apache.org/dyn/closer.cgi?path=/kafka/0.10.1.0/kafka_2.11-0.10.1.0.tgz 
+    wget http://apache.mirror.anlx.net/kafka/0.10.1.0/kafka_2.11-0.10.1.0.tgz 
     
 RUN tar xzvf kafka_2.11-0.10.1.0.tgz && \
-    mv kafka_2.11-0.10.1.0 kafka 
+    cp -R kafka_2.11-0.10.1.0/* kafka  && \
+    rm -rf kafka_2.11-0.10.1.0 && \
+    rm -rf kafka_2.11-0.10.1.0.tgz && \
+    rm -rf jdk1.8.0_92
+    
+ENV KAFKA_HOME /opt/kafka    
+
+    
 
 
 
