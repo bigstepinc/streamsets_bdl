@@ -43,8 +43,8 @@ sed -i 's/^ *//' hosts
 sed -e 's/\s/,/g' hosts > hosts.txt
 #rm -rf hosts
 
-$content=`cat $KAFKA_HOME/config/hosts.txt`
+content=$(cat $KAFKA_HOME/config/hosts.txt)
 
-sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=${content}/" $KAFKA_HOME/config/server.properties >> $KAFKA_HOME/config/server.properties.tmp && \
+sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server.properties >> $KAFKA_HOME/config/server.properties.tmp && \
 mv  $KAFKA_HOME/config/server.properties.tmp  $KAFKA_HOME/config/server.properties
 #rm -rf hosts.txt
