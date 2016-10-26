@@ -9,11 +9,11 @@ RUN cd /opt && \
     
 RUN cd /opt && \
     tar xzvf kafka_2.11-0.10.1.0.tgz 
-
-RUN rm -rf kafka_2.11-0.10.1.0.tgz && \
-    rm -rf jdk1.8.0_92
     
-ENV KAFKA_HOME /opt/kafka_2.11-0.10.1.0  
+ENV KAFKA_HOME /opt/kafka_2.11-0.10.1.0 
+
+RUN rm -rf $KAFKA_HOME/kafka_2.11-0.10.1.0.tgz && \
+    rm -rf /opt/jdk1.8.0_92 
 
 ADD script.sh /opt/
 RUN bash /opt/script.sh
