@@ -27,7 +27,7 @@ while read line; do
 		fi
 		if [ "$ip" == "$local_ip" ]; then
 			echo "$index" >> /tmp/zookeeper/myid
-			index=$(($index -1))
+			#index=$(($index -1))
 			sed "s/broker.id=0/broker.id=$index/" $KAFKA_HOME/config/server.properties >> $KAFKA_HOME/config/server.properties.tmp
                         mv $KAFKA_HOME/config/server.properties.tmp $KAFKA_HOME/config/server.properties
 		fi
