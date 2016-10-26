@@ -11,12 +11,12 @@ mkdir /tmp/zookeeper && mkdir /tmp/kafka-logs
 cd $KAFKA_HOME && \
 cd ./config && \
 sleep 100 && \
-nslookup $HOSTNAME >>kafka.cluster
+nslookup $HOSTNAME >> kafka.cluster
 
 # Configure Zookeeper
 no_instances=$(($(wc -l < kafka.cluster) - 2))
 
-while [ $no_instances -le $NO ] ; do
+while [ $no_instances -lt $NO ] ; do
 	rm -rf $KAFKA_HOME/config/kafka.cluster
 	nslookup $HOSTNAME >>kafka.cluster
 	no_instances=$(($(wc -l < kafka.cluster) - 2))
@@ -26,8 +26,6 @@ done
 ifconfig | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b" >> output
 local_ip=$(head -n1 output) && \
 rm output
-
-
 
 touch hosts
 
@@ -70,4 +68,3 @@ nohup $KAFKA_HOME/bin/zookeeper-server-start.sh $KAFKA_HOME/config/zookeeper.pro
 
 # Start Kafka service
 $KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server.properties
-
