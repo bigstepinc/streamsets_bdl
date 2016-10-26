@@ -12,11 +12,10 @@ RUN cd /opt && \
     
 ENV KAFKA_HOME /opt/kafka_2.11-0.10.1.0 
 
-RUN rm -rf $KAFKA_HOME/kafka_2.11-0.10.1.0.tgz && \
-    rm -rf /opt/jdk1.8.0_92 
+RUN rm -rf $KAFKA_HOME/kafka_2.11-0.10.1.0.tgz
 
 ADD script.sh /opt/
-RUN bash /opt/script.sh
+RUN cd /opt && bash /opt/script.sh
 RUN rm /opt/script.sh
 
 ADD entrypoint.sh /opt/entrypoint.sh
