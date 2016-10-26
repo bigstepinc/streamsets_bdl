@@ -5,16 +5,20 @@ mkdir /tmp/zookeeper && mkdir /tmp/kafka-logs
 
 cd $KAFKA_HOME && \
 cd ./config && \
-sleep 30 && \
+sleep 100 && \
 nslookup $HOSTNAME >>kafka.cluster
+
+# Configure Zookeeper
+no_instances=$(($(wc -l < kafka.cluster) - 2))
+
+
 
 # Determine the local ip
 ifconfig | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b" >> output
 local_ip=$(head -n1 output) && \
 rm output
 
-# Configure Zookeeper
-no_instances=$(($(wc -l < kafka.cluster) - 2))
+
 
 touch hosts
 
