@@ -18,7 +18,8 @@ no_instances=$(($(wc -l < kafka.cluster) - 2))
 
 while [ $no_instances -lt $NO ] ; do
 	rm -rf $KAFKA_HOME/config/kafka.cluster
-	nslookup $HOSTNAME >>kafka.cluster
+	touch $KAFKA_HOME/config/kafka.cluster
+	nslookup $HOSTNAME >> $KAFKA_HOME/config/kafka.cluster
 	no_instances=$(($(wc -l < kafka.cluster) - 2))
 done
 
