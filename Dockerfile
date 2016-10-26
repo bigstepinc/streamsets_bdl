@@ -20,6 +20,7 @@ RUN bash /opt/script.sh
 RUN rm /opt/script.sh
 
 ADD entrypoint.sh /opt/entrypoint.sh
+RUN chmod 777 /opt/entrypoint.sh
 
 RUN apk del wget tar curl unzip
 
