@@ -27,7 +27,8 @@ while read line; do
 		fi
 		if [ "$ip" == "$local_ip" ]; then
 			echo "$index" >> /tmp/zookeeper/myid
-			sed "s/broker.id=0/broker.id=$index/" server.properties >> serve
+			index=$(($index -1))
+			sed "s/broker.id=0/broker.id=$index/" server.properties >> server.properties.tmp
                         mv server.properties.tmp server.properties
 		fi
 done < 'kafka.cluster' 
@@ -41,6 +42,9 @@ rm -rf kafka.cluster
 sed -i 's/^ *//' hosts 
 sed -e 's/\s/,/g' hosts > hosts.txt
 rm -rf hosts
-sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$(cat hosts.txt)/" $KAFKA_HOME/config/server.properties >> $KAFKA_HOME/config/server.properties.tmp && \
+
+$content=`cat $KAFKA_HOME/config/hosts.txt`
+
+sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=${content}/" $KAFKA_HOME/config/server.properties >> $KAFKA_HOME/config/server.properties.tmp && \
 mv  $KAFKA_HOME/config/server.properties.tmp  $KAFKA_HOME/config/server.properties
 rm -rf hosts.txt
