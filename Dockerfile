@@ -15,8 +15,6 @@ ENV KAFKA_HOME /opt/kafka_2.11-0.10.1.0
 RUN rm -rf /opt/kafka_2.11-0.10.1.0.tgz
 
 ADD script.sh /opt/
-RUN cd /opt && bash /opt/script.sh
-RUN rm /opt/script.sh
 
 ADD entrypoint.sh /opt/entrypoint.sh
 RUN chmod 777 /opt/entrypoint.sh
