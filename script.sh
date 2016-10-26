@@ -28,23 +28,23 @@ while read line; do
 		if [ "$ip" == "$local_ip" ]; then
 			echo "$index" >> /tmp/zookeeper/myid
 			index=$(($index -1))
-			sed "s/broker.id=0/broker.id=$index/" server.properties >> server.properties.tmp
-                        mv server.properties.tmp server.properties
+			sed "s/broker.id=0/broker.id=$index/" $KAFKA_HOME/config/server.properties >> $KAFKA_HOME/config/server.properties.tmp
+                        mv $KAFKA_HOME/config/server.properties.tmp $KAFKA_HOME/config/server.properties
 		fi
 done < 'kafka.cluster' 
 echo "initLimit=5" >> $KAFKA_HOME/config/zookeeper.properties
 echo "syncLimit=2" >> $KAFKA_HOME/config/zookeeper.properties
 
 #Remove kafka.cluster file
-rm -rf kafka.cluster
+#rm -rf kafka.cluster
 
 # configure all the hosts in the cluster in the server.properties file
 sed -i 's/^ *//' hosts 
 sed -e 's/\s/,/g' hosts > hosts.txt
-rm -rf hosts
+#rm -rf hosts
 
 $content=`cat $KAFKA_HOME/config/hosts.txt`
 
 sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=${content}/" $KAFKA_HOME/config/server.properties >> $KAFKA_HOME/config/server.properties.tmp && \
 mv  $KAFKA_HOME/config/server.properties.tmp  $KAFKA_HOME/config/server.properties
-rm -rf hosts.txt
+#rm -rf hosts.txt
