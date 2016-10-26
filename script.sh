@@ -5,6 +5,7 @@ mkdir /tmp/zookeeper && mkdir /tmp/kafka-logs
 
 cd $KAFKA_HOME && \
 cd ./config && \
+sleep 30 && \
 nslookup $HOSTNAME >>kafka.cluster
 
 # Determine the local ip
