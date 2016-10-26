@@ -11,7 +11,11 @@ nslookup $HOSTNAME >>kafka.cluster
 # Configure Zookeeper
 no_instances=$(($(wc -l < kafka.cluster) - 2))
 
-
+while [ $no_instances -le $NO ] ; do
+	rm -rf $KAFKA_HOME/config/kafka.cluster
+	nslookup $HOSTNAME >>kafka.cluster
+	no_instances=$(($(wc -l < kafka.cluster) - 2))
+done
 
 # Determine the local ip
 ifconfig | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b" >> output
