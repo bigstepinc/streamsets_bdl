@@ -22,7 +22,7 @@ while [ $no_instances -lt $NO ] ; do
 	nslookup $HOSTNAME > $KAFKA_HOME/config/kafka.cluster
 	no_instances=$(($(wc -l < kafka.cluster) - 2))
 done
-nslookup $HOSTNAME > $KAFKA_HOME/config/kafka.cluster
+#nslookup $HOSTNAME > $KAFKA_HOME/config/kafka.cluster
 # Determine the local ip
 ifconfig | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b" >> output
 local_ip=$(head -n1 output) && \
