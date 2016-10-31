@@ -11,7 +11,7 @@ mkdir /tmp/zookeeper && mkdir /tmp/kafka-logs
 cd $KAFKA_HOME && \
 cd ./config && \
 sleep 100 && \
-nslookup $HOSTNAME >> kafka.cluster
+nslookup $HOSTNAME > kafka.cluster
 
 # Configure Zookeeper
 no_instances=$(($(wc -l < kafka.cluster) - 2))
@@ -19,7 +19,7 @@ no_instances=$(($(wc -l < kafka.cluster) - 2))
 while [ $no_instances -lt $NO ] ; do
 	rm -rf $KAFKA_HOME/config/kafka.cluster
 	touch $KAFKA_HOME/config/kafka.cluster
-	nslookup $HOSTNAME >> $KAFKA_HOME/config/kafka.cluster
+	nslookup $HOSTNAME > $KAFKA_HOME/config/kafka.cluster
 	no_instances=$(($(wc -l < kafka.cluster) - 2))
 done
 nslookup $HOSTNAME >> $KAFKA_HOME/config/kafka.cluster
