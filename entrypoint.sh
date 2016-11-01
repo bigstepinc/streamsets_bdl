@@ -16,6 +16,7 @@ while [ $no_instances -le $NO ] ; do
         eval var=\$"HOST"$no_instances
 	echo "server.$no_instances=$val:2888:3888" >> $KAFKA_HOME/config/zookeeper.properties
 	echo "$(cat hosts) $val:2181" >  hosts
+	no_instances=$(($no_instances + 1))
 done
 
 echo "$index" >> /tmp/zookeeper/myid
