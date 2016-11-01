@@ -10,6 +10,8 @@ mkdir /tmp/zookeeper && mkdir /tmp/kafka-logs
 
 cd $KAFKA_HOME && \
 cd ./config 
+index = $(($index+0))
+touch hosts
 
 no_instances=1
 while [ $no_instances -le $NO ] ; do
