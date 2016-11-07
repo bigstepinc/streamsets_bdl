@@ -21,6 +21,6 @@ RUN chmod 777 /opt/entrypoint.sh
 
 RUN apk del wget tar curl unzip
 
-EXPOSE 2181 2888 3888
+EXPOSE 2181 2888 3888 9092
 
 ENTRYPOINT ["/opt/entrypoint.sh"]
