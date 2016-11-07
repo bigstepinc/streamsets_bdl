@@ -15,6 +15,7 @@ cd $KAFKA_HOME && \
 cd ./config 
 touch hosts
 
+sleep 5
 nslookup $HOSTNAME >> zk.cluster
 
 echo "the zookeeper cluster is the following one"
