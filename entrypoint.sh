@@ -1,25 +1,39 @@
 #!/bin/bash
 
 #Setup environment
-#cd /opt && bash /opt/script.sh
-#rm /opt/script.sh
-
 
 # Retrieve the instances in the Kafka cluster
 mkdir /tmp/zookeeper && mkdir /tmp/kafka-logs
 
 cd $KAFKA_HOME && \
 cd ./config 
-index = $(($index+0))
 touch hosts
 
+nslookup $HOSTNAME >> zk.cluster
+
+# Configure Zookeeper
+NO=$(($(wc -l < zk.cluster) - 2))
+
+while read line; do
+	ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
+	echo "$ip" >> zk.cluster.tmp
+done < 'zk.cluster'
+rm zk.cluster
+
+sort -n zk.cluster.tmp > zk.cluster.tmp.sort
+mv zk.cluster.tmp.sort zk.cluster.tmp
+
 no_instances=1
-while [ $no_instances -le $NO ] ; do
-        eval var=\$"HOST"$no_instances
-	echo "server.$no_instances=$val:2888:3888" >> $KAFKA_HOME/config/zookeeper.properties
-	echo "$(cat hosts) $val:2181" >  hosts
-	no_instances=$(($no_instances + 1))
-done
+while read line; do
+        if [ "$line" != "" ]; then
+		#eval var=\$"HOST"$no_instances
+		echo "server.$no_instances=$line:2888:3888" >> $KAFKA_HOME/config/zookeeper.properties
+		echo "$(cat hosts) $ip:2181" >  hosts
+		no_instances=$(($no_instances + 1))
+	fi
+done < 'zk.cluster.tmp'
+
+index = 0
 
 echo "$index" >> /tmp/zookeeper/myid
 sed "s/broker.id=0/broker.id=$index/" $KAFKA_HOME/config/server.properties >> $KAFKA_HOME/config/server.properties.tmp
