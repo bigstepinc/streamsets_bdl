@@ -1,6 +1,9 @@
 #!/bin/bash
 
 #Setup environment
+ifconfig | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b" >> output
+local_ip=$(head -n1 output)
+rm output
 
 # Retrieve the instances in the Kafka cluster
 mkdir /tmp/zookeeper && mkdir /tmp/kafka-logs
@@ -35,9 +38,32 @@ done < 'zk.cluster.tmp'
 
 index = 0
 
-echo "$index" >> /tmp/zookeeper/myid
-sed "s/broker.id=0/broker.id=$index/" $KAFKA_HOME/config/server.properties >> $KAFKA_HOME/config/server.properties.tmp
-mv $KAFKA_HOME/config/server.properties.tmp $KAFKA_HOME/config/server.properties
+nslookup $HOSTNAME_KAFKA >> kafka.cluster
+
+# Configure Zookeeper
+NO=$(($(wc -l < kafka.cluster) - 2))
+
+while read line; do
+	ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
+	echo "$ip" >> kafka.cluster.tmp
+done < 'kafka.cluster'
+rm kafka.cluster
+
+sort -n kafka.cluster.tmp > kafka.cluster.tmp.sort
+mv kafka.cluster.tmp.sort kafka.cluster.tmp
+index=0;
+while read line; do
+	if [ "$line" != "" ]; then
+		if [ "$line" == "$local_ip" ]; then
+			echo "$index" >> /tmp/zookeeper/myid
+			sed "s/broker.id=0/broker.id=$index/" $KAFKA_HOME/config/server.properties >> $KAFKA_HOME/config/server.properties.tmp
+			mv $KAFKA_HOME/config/server.properties.tmp $KAFKA_HOME/config/server.properties
+		else
+			index=$(($index + 1))
+		fi
+	fi
+done < 'kafka.cluster.tmp'
+rm kafka.cluster.tmp
  
 echo "initLimit=5" >> $KAFKA_HOME/config/zookeeper.properties
 echo "syncLimit=2" >> $KAFKA_HOME/config/zookeeper.properties
