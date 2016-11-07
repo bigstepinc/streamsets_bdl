@@ -44,7 +44,7 @@ while read line; do
 	fi
 done < 'zk.cluster.tmp'
 
-index = 0
+index=0
 
 nslookup $HOSTNAME_KAFKA >> kafka.cluster
 
@@ -69,6 +69,7 @@ while read line; do
 	if [ "$line" != "" ]; then
 		if [ "$line" == "$local_ip" ]; then
 			#echo "$index" >> /tmp/zookeeper/myid
+			touch  $KAFKA_HOME/config/server-$index.properties
 			sed "s/broker.id=0/broker.id=$index/" $KAFKA_HOME/config/server.properties >> $KAFKA_HOME/config/server.properties.tmp
 			mv $KAFKA_HOME/config/server.properties.tmp $KAFKA_HOME/config/server-$index.properties
 		else
