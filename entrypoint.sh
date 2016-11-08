@@ -63,12 +63,13 @@ rm kafka.cluster
 sort -n kafka.cluster.tmp > kafka.cluster.tmp.sort
 mv kafka.cluster.tmp.sort kafka.cluster.tmp
 
-index=0
+index=1
 
 while read line; do
 	if [ "$line" != "" ]; then
 		if [ "$line" == "$local_ip" ]; then
 			#echo "$index" >> /tmp/zookeeper/myid
+			current_index=index
 			touch  $KAFKA_HOME/config/server-$index.properties
 			sed "s/broker.id=0/broker.id=$index/" $KAFKA_HOME/config/server.properties >> $KAFKA_HOME/config/server.properties.tmp
 			mv $KAFKA_HOME/config/server.properties.tmp $KAFKA_HOME/config/server-$index.properties
@@ -91,14 +92,15 @@ content=$(cat $KAFKA_HOME/config/hosts.txt)
 index=1
 
 while [ $index -le $NOK ]; do
-
-	sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server.properties.tmp && \
-	mv  $KAFKA_HOME/config/server.properties.tmp  $KAFKA_HOME/config/server-$index.properties
+	if [ $index == $current_index ] ; then
+		sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server.properties.tmp && \
+		mv  $KAFKA_HOME/config/server.properties.tmp  $KAFKA_HOME/config/server-$index.properties
 
 # Start Zookeeper service
 #nohup $KAFKA_HOME/bin/zookeeper-server-start.sh $KAFKA_HOME/config/zookeeper.properties &
 
 # Start Kafka service
-	$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server-$index.properties
-	index=$(($index + 1))
+		$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server-$index.properties
+		index=$(($index + 1))
+	fi
 done
