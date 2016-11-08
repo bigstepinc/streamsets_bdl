@@ -103,7 +103,7 @@ while [ $index -le $NOK ]; do
 #nohup $KAFKA_HOME/bin/zookeeper-server-start.sh $KAFKA_HOME/config/zookeeper.properties &
 
 # Start Kafka service
-		$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server-$index.properties
+		$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server-${index}.properties
 	fi
 	index=$(($index + 1))
 done
