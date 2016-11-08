@@ -93,7 +93,7 @@ content=$(cat $KAFKA_HOME/config/hosts.txt)
 index=1
 
 while [ $index -le $NOK ]; do
-	"index is $index and current index is $current_index"
+	echo "index is $index and current index is $current_index"
 	if [ $index == $current_index ] ; then
 		echo "modific acum zookeeper connect"
 		sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp && \
