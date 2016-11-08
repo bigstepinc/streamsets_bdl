@@ -51,6 +51,7 @@ nslookup $HOSTNAME_KAFKA >> kafka.cluster
 NOK=$(($(wc -l < kafka.cluster) - 2))
 
 echo "NOK is $NOK"
+cat kafka.cluster
 
 
 # Configure 
