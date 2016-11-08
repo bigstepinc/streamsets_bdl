@@ -70,9 +70,9 @@ while read line; do
 		if [ "$line" == "$local_ip" ]; then
 			#echo "$index" >> /tmp/zookeeper/myid
 			current_index=index
-			touch  $KAFKA_HOME/config/server-$index.properties
-			sed "s/broker.id=0/broker.id=$index/" $KAFKA_HOME/config/server.properties >> $KAFKA_HOME/config/server.properties.tmp
-			mv $KAFKA_HOME/config/server.properties.tmp $KAFKA_HOME/config/server-$index.properties
+			cp $KAFKA_HOME/config/server.properties $KAFKA_HOME/config/server-$index.properties
+			sed "s/broker.id=0/broker.id=$index/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp
+			mv $KAFKA_HOME/config/server-$index.properties.tmp $KAFKA_HOME/config/server-$index.properties
 		else
 			index=$(($index + 1))
 		fi
@@ -93,8 +93,8 @@ index=1
 
 while [ $index -le $NOK ]; do
 	if [ $index == $current_index ] ; then
-		sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server.properties.tmp && \
-		mv  $KAFKA_HOME/config/server.properties.tmp  $KAFKA_HOME/config/server-$index.properties
+		sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp && \
+		mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
 
 # Start Zookeeper service
 #nohup $KAFKA_HOME/bin/zookeeper-server-start.sh $KAFKA_HOME/config/zookeeper.properties &
