@@ -71,7 +71,7 @@ while read line; do
 	if [ "$line" != "" ]; then
 		if [ "$line" == "$local_ip" ]; then
 			#echo "$index" >> /tmp/zookeeper/myid
-			current_index=index
+			current_index=$index
 			echo "my current index is $current_index"
 			cp $KAFKA_HOME/config/server.properties $KAFKA_HOME/config/server-$index.properties
 			sed "s/broker.id=0/broker.id=$index/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp
