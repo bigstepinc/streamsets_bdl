@@ -104,6 +104,6 @@ while [ $index -le $NOK ]; do
 
 # Start Kafka service
 		$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server-$index.properties
-		index=$(($index + 1))
 	fi
+	index=$(($index + 1))
 done
