@@ -50,6 +50,8 @@ nslookup $HOSTNAME_KAFKA >> kafka.cluster
 
 NOK=$(($(wc -l < kafka.cluster) - 2))
 
+echo "NOK is $NOK"
+
 
 # Configure 
 #NO=$(($(wc -l < kafka.cluster) - 2))
@@ -70,6 +72,7 @@ while read line; do
 		if [ "$line" == "$local_ip" ]; then
 			#echo "$index" >> /tmp/zookeeper/myid
 			current_index=index
+			echo "my current index is $current_index"
 			cp $KAFKA_HOME/config/server.properties $KAFKA_HOME/config/server-$index.properties
 			sed "s/broker.id=0/broker.id=$index/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp
 			mv $KAFKA_HOME/config/server-$index.properties.tmp $KAFKA_HOME/config/server-$index.properties
@@ -79,9 +82,7 @@ while read line; do
 	fi
 done < 'kafka.cluster.tmp'
 rm kafka.cluster.tmp
- 
-#echo "initLimit=5" >> $KAFKA_HOME/config/zookeeper.properties
-#echo "syncLimit=2" >> $KAFKA_HOME/config/zookeeper.properties
+
 
 # configure all the hosts in the cluster in the server.properties file
 sed -i 's/^ *//' hosts 
@@ -92,7 +93,9 @@ content=$(cat $KAFKA_HOME/config/hosts.txt)
 index=1
 
 while [ $index -le $NOK ]; do
+	"index is $index and current index is $current_index"
 	if [ $index == $current_index ] ; then
+		echo "modific acum zookeeper connect"
 		sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp && \
 		mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
 
