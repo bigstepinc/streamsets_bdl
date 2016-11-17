@@ -16,7 +16,7 @@ cd ./config
 touch hosts
 
 sleep 5
-nslookup $HOSTNAME >> zk.cluster
+nslookup $HOSTNAME_ZOOKEEPER >> zk.cluster
 
 echo "the zookeeper cluster is the following one"
 cat zk.cluster
