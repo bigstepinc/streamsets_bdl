@@ -84,7 +84,7 @@ rm hosts
 
 # Start Kafka Manager Service
 ZKHOSTS=$content
-$KAFKA_MANAGER_HOME/bin/kafka-manager -Dkafka-manager.zkhosts=$ZKHOSTS
+$KAFKA_MANAGER_HOME/bin/kafka-manager -Dkafka-manager.zkhosts=$ZKHOSTS > /dev/null &
 
 # Start Kafka service
 $KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server-${current_index}.properties
