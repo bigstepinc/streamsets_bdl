@@ -14,8 +14,6 @@ ENV KAFKA_HOME /opt/kafka_2.11-0.10.1.0
 
 RUN rm -rf /opt/kafka_2.11-0.10.1.0.tgz
 
-ADD script.sh /opt/
-
 # Install Kafka and Kafka Manager
 ENV SBT_VERSION 0.13.11
 ENV SBT_HOME /usr/local/sbt
@@ -46,6 +44,8 @@ ADD entrypoint.sh /opt/entrypoint.sh
 RUN chmod 777 /opt/entrypoint.sh
 
 RUN apk del wget tar curl unzip
+
+RUN /usr/bin/start-kafka-manager.sh
 
 EXPOSE 2181 2888 3888 9092 9000
 
