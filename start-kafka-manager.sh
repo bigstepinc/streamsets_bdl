@@ -41,4 +41,4 @@ rm hosts
 rm hosts.txt
 
 echo $ZKHOSTS
-$KAFKA_MANAGER_HOME/bin/kafka-manager -Dkafka-manager.zkhosts=$ZKHOSTS &
+$KAFKA_MANAGER_HOME/bin/kafka-manager -Dkafka-manager.zkhosts=$ZKHOSTS
