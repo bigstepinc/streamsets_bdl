@@ -46,8 +46,8 @@ RUN chmod 777 /usr/bin/start-kafka-manager.sh
 
 RUN apk del wget tar curl unzip
 
-RUN /opt/entrypoint.sh
+#RUN /opt/entrypoint.sh
 
 EXPOSE 2181 2888 3888 9092 9000
 
-ENTRYPOINT ["/usr/bin/start-kafka-manager.sh"]
+ENTRYPOINT ["/opt/entrypoint.sh"]
