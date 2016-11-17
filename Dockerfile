@@ -42,6 +42,7 @@ ADD start-kafka-manager.sh /usr/bin/
 ADD entrypoint.sh /opt/entrypoint.sh
 
 RUN chmod 777 /opt/entrypoint.sh
+RUN chmod 777 /usr/bin/start-kafka-manager.sh
 
 RUN apk del wget tar curl unzip
 
