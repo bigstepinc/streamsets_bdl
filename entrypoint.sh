@@ -60,12 +60,12 @@ index=1
 while read line; do
 	if [ "$line" != "" ]; then
 		if [ "$line" == "$local_ip" ]; then
-			current_index=$(echo $local_ip | sed -e 's/\.//g')
+			current_index=$index
 			cp $KAFKA_HOME/config/server.properties $KAFKA_HOME/config/server-$current_index.properties
 			sed "s/broker.id=0/broker.id=$index/" $KAFKA_HOME/config/server-$current_index.properties >> $KAFKA_HOME/config/server-$current_index.properties.tmp
 			mv $KAFKA_HOME/config/server-$current_index.properties.tmp $KAFKA_HOME/config/server-$current_index.properties
-		#else
-		#	index=$(($index + 1))
+		else
+			index=$(($index + 1))
 		fi
 	fi
 done < 'kafka.cluster.tmp'
@@ -130,7 +130,7 @@ rm hosts
 #content=$(cat hosts.txt)
 ZKHOSTS=$content
 
-rm hosts
+#rm hosts
 #rm hosts.txt
 
 #echo $ZKHOSTS
