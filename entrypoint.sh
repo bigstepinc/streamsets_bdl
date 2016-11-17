@@ -78,60 +78,13 @@ sed -e 's/\s/,/g' hosts > hosts.txt
 
 content=$(cat $KAFKA_HOME/config/hosts.txt)
 
-#index=1
-
-#while [ $index -le $NOK ]; do
-#	echo "index is $index and current index is $current_index"
-#	if [ $index == $current_index ] ; then
-#		echo "modific acum zookeeper connect"
-		sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server-$current_index.properties >> $KAFKA_HOME/config/server-$current_index.properties.tmp && \
-		mv  $KAFKA_HOME/config/server-$current_index.properties.tmp  $KAFKA_HOME/config/server-$current_index.properties
-		
-		# Start Kafka service
-		$KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server-${current_index}.properties
-	#fi
-	#index=$(($index + 1))
-#done
+sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server-$current_index.properties >> $KAFKA_HOME/config/server-$current_index.properties.tmp && \
+mv  $KAFKA_HOME/config/server-$current_index.properties.tmp  $KAFKA_HOME/config/server-$current_index.properties
 rm hosts
-#touch hosts 
 
-#if [ "$HOSTNAME_ZOOKEEPER" != "" ]; then
-#	sleep 5
-#	nslookup $HOSTNAME_ZOOKEEPER >> zk.cluster
-
-#	echo "the zookeeper cluster is the following one"
-#	cat zk.cluster
-
-	# Configure Zookeeper
-#	NO=$(($(wc -l < zk.cluster) - 2))
-
-#	while read line; do
-#		ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-#		echo "$ip" >> zk.cluster.tmp
-#	done < 'zk.cluster'
-#	rm zk.cluster
-
-#	sort -n zk.cluster.tmp > zk.cluster.tmp.sort
-#	mv zk.cluster.tmp.sort zk.cluster.tmp
-
-#	no_instances=1
-#	while read line; do
-#        	if [ "$line" != "" ]; then
-#			echo "$(cat hosts) $line:2181" >  hosts
-#			no_instances=$(($no_instances + 1))
-#		fi
-#	done < 'zk.cluster.tmp'
-
-#fi
-
-#sed -i 's/^ *//' hosts 
-#sed -e 's/\s/,/g' hosts > hosts.txt
-
-#content=$(cat hosts.txt)
+# Start Kafka Manager Service
 ZKHOSTS=$content
-
-#rm hosts
-#rm hosts.txt
-
-#echo $ZKHOSTS
 $KAFKA_MANAGER_HOME/bin/kafka-manager -Dkafka-manager.zkhosts=$ZKHOSTS
+
+# Start Kafka service
+$KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server-${current_index}.properties
