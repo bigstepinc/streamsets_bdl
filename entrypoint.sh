@@ -43,13 +43,6 @@ nslookup $HOSTNAME_KAFKA >> kafka.cluster
 
 NOK=$(($(wc -l < kafka.cluster) - 2))
 
-echo "NOK is $NOK"
-cat kafka.cluster
-
-
-# Configure 
-#NO=$(($(wc -l < kafka.cluster) - 2))
-
 while read line; do
 	ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
 	echo "$ip" >> kafka.cluster.tmp
@@ -64,7 +57,6 @@ index=1
 while read line; do
 	if [ "$line" != "" ]; then
 		if [ "$line" == "$local_ip" ]; then
-			#echo "$index" >> /tmp/zookeeper/myid
 			current_index=$index
 			echo "my current index is $current_index"
 			cp $KAFKA_HOME/config/server.properties $KAFKA_HOME/config/server-$index.properties
@@ -126,8 +118,6 @@ ZKHOSTS=$content
 rm hosts
 rm hosts.txt
 
-echo $ZKHOSTS
-
 index=1
 
 while [ $index -le $NOK ]; do
@@ -136,9 +126,6 @@ while [ $index -le $NOK ]; do
 		echo "modific acum zookeeper connect"
 		sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp && \
 		mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
-
-# Start Zookeeper service
-#nohup $KAFKA_HOME/bin/zookeeper-server-start.sh $KAFKA_HOME/config/zookeeper.properties &
 
 		# Start Kafka Manager Service
 		$KAFKA_MANAGER_HOME/bin/kafka-manager -Dkafka-manager.zkhosts=$ZKHOSTS > /dev/null &
