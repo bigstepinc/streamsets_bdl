@@ -71,8 +71,6 @@ while read line; do
 		fi
 	fi
 done < 'kafka.cluster.tmp'
-#rm kafka.cluster.tmp
-
 
 # configure all the hosts in the cluster in the server.properties file
 sed -i 's/^ *//' hosts 
@@ -80,7 +78,7 @@ sed -e 's/\s/,/g' hosts > hosts.txt
 
 content=$(cat $KAFKA_HOME/config/hosts.txt)
 
-
+rm hosts.txt
 
 touch hosts 
 
@@ -122,11 +120,8 @@ ZKHOSTS=$content
 rm hosts
 rm hosts.txt
 
-#index=1
-
-#while [ $index -le $NOK ]; do
 while read line; do
-	#echo "index is $index and current index is $current_index"
+	
 	oct3=$(echo $line | tr "." " " | awk '{ print $3 }')
 	oct4=$(echo $line | tr "." " " | awk '{ print $4 }')
 	index=$oct3$oct4
@@ -134,6 +129,11 @@ while read line; do
 	if [ $index == $current_index ] ; then
 		sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp && \
 		mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
+		
+		if [ "$KAFKA_PATH" != "" ]; then
+			sed "s/log.dirs.*/log.dirs=$KAFKA_PATH/"  $KAFKA_HOME/config/server-$index.properties >>  $KAFKA_HOME/config/server-$index.properties.tmp &&
+        		mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
+		fi
 
 		# Start Kafka Manager Service
 		$KAFKA_MANAGER_HOME/bin/kafka-manager -Dkafka-manager.zkhosts=$ZKHOSTS > /dev/null &
@@ -141,5 +141,4 @@ while read line; do
 		# Start Kafka servicE
 		$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server-${index}.properties
 	fi
-	#index=$(($index + 1))
 done < 'kafka.cluster.tmp'
