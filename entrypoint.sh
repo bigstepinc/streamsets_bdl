@@ -57,8 +57,12 @@ index=1
 while read line; do
 	if [ "$line" != "" ]; then
 		if [ "$line" == "$local_ip" ]; then
+			###current_index=$index
+			###echo "my current index is $current_index"
+			oct3=$(echo $line | tr "." " " | awk '{ print $3 }')
+			oct4=$(echo $line | tr "." " " | awk '{ print $4 }')
+			index=$oct3$oct4
 			current_index=$index
-			echo "my current index is $current_index"
 			cp $KAFKA_HOME/config/server.properties $KAFKA_HOME/config/server-$index.properties
 			sed "s/broker.id=0/broker.id=$index/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp
 			mv $KAFKA_HOME/config/server-$index.properties.tmp $KAFKA_HOME/config/server-$index.properties
@@ -67,7 +71,7 @@ while read line; do
 		fi
 	fi
 done < 'kafka.cluster.tmp'
-rm kafka.cluster.tmp
+#rm kafka.cluster.tmp
 
 
 # configure all the hosts in the cluster in the server.properties file
@@ -118,12 +122,16 @@ ZKHOSTS=$content
 rm hosts
 rm hosts.txt
 
-index=1
+#index=1
 
-while [ $index -le $NOK ]; do
-	echo "index is $index and current index is $current_index"
+#while [ $index -le $NOK ]; do
+while read line; do
+	#echo "index is $index and current index is $current_index"
+	oct3=$(echo $line | tr "." " " | awk '{ print $3 }')
+	oct4=$(echo $line | tr "." " " | awk '{ print $4 }')
+	index=$oct3$oct4
+	
 	if [ $index == $current_index ] ; then
-		echo "modific acum zookeeper connect"
 		sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp && \
 		mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
 
@@ -133,5 +141,5 @@ while [ $index -le $NOK ]; do
 		# Start Kafka servicE
 		$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server-${index}.properties
 	fi
-	index=$(($index + 1))
-done
+	#index=$(($index + 1))
+done < 'kafka.cluster.tmp'
