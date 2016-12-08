@@ -131,7 +131,8 @@ while read line; do
 		mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
 		
 		if [ "$KAFKA_PATH" != "" ]; then
-			sed "s/log.dirs.*/log.dirs=$KAFKA_PATH/"  $KAFKA_HOME/config/server-$index.properties >>  $KAFKA_HOME/config/server-$index.properties.tmp &&
+			cd $KAFKA_PATH && mkdir kafka-logs-$HOSTNAME_KAFKA
+			sed "s/log.dirs.*/log.dirs=$KAFKA_PATH\/kafka-logs-$HOSTNAME_KAFKA/"  $KAFKA_HOME/config/server-$index.properties >>  $KAFKA_HOME/config/server-$index.properties.tmp &&
         		mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
 		fi
 
