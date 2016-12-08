@@ -18,10 +18,18 @@ nslookup $HOSTNAME_ZOOKEEPER >> zk.cluster
 # Configure Zookeeper
 NO=$(($(wc -l < zk.cluster) - 2))
 
-while read line; do
-	ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-	echo "$ip" >> zk.cluster.tmp
-done < 'zk.cluster'
+while [ $NO -lt 1 ] ; do
+	while read line; do
+		ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
+		echo "$ip" >> zk.cluster.tmp
+	done < 'zk.cluster'	
+sleep 5
+nslookup $HOSTNAME_ZOOKEEPER > zk.cluster
+
+# Configure Zookeeper
+NO=$(($(wc -l < zk.cluster) - 2))
+done
+	
 rm zk.cluster
 
 sort -n zk.cluster.tmp > zk.cluster.tmp.sort
@@ -43,10 +51,17 @@ nslookup $HOSTNAME_KAFKA >> kafka.cluster
 
 NOK=$(($(wc -l < kafka.cluster) - 2))
 
-while read line; do
-	ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-	echo "$ip" >> kafka.cluster.tmp
-done < 'kafka.cluster'
+while [ $NOK -lt 1 ] ; do
+	while read line; do
+		ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
+		echo "$ip" >> kafka.cluster.tmp
+	done < 'kafka.cluster'
+
+nslookup $HOSTNAME_KAFKA > kafka.cluster
+
+NOK=$(($(wc -l < kafka.cluster) - 2))
+done
+
 rm kafka.cluster
 
 sort -n kafka.cluster.tmp > kafka.cluster.tmp.sort
@@ -57,8 +72,6 @@ index=1
 while read line; do
 	if [ "$line" != "" ]; then
 		if [ "$line" == "$local_ip" ]; then
-			###current_index=$index
-			###echo "my current index is $current_index"
 			oct3=$(echo $line | tr "." " " | awk '{ print $3 }')
 			oct4=$(echo $line | tr "." " " | awk '{ print $4 }')
 			index=$oct3$oct4
