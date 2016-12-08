@@ -126,12 +126,13 @@ while read line; do
 	oct4=$(echo $line | tr "." " " | awk '{ print $4 }')
 	index=$oct3$oct4
 	
-	if [ $index == $current_index ] ; then
+	if [ "$index" == "$current_index" ] ; then
 		sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp && \
 		mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
 		
 		if [ "$KAFKA_PATH" != "" ]; then
-			cd $KAFKA_PATH && mkdir kafka-logs-$HOSTNAME_KAFKA
+			path=$(echo $KAFKA_PATH | tr "\\" " ")
+			cd $path && mkdir kafka-logs-$HOSTNAME_KAFKA
 			sed "s/log.dirs.*/log.dirs=$KAFKA_PATH\/kafka-logs-$HOSTNAME_KAFKA/"  $KAFKA_HOME/config/server-$index.properties >>  $KAFKA_HOME/config/server-$index.properties.tmp &&
         		mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
 		fi
