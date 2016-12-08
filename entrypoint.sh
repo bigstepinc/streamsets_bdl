@@ -164,10 +164,16 @@ while read line; do
 			#path3=$(echo $KAFKA_PATH | tr "\\" " " | awk '{ print $3 }')
 			#path=$path1$path2$path3
 			#cd $path && mkdir kafka-logs-$HOSTNAME_KAFKA
+			
+			
 			cd $path && mkdir kafka-logs-$index
 			#sed "s/log.dirs.*/log.dirs=$KAFKA_PATH\/kafka-logs-$HOSTNAME_KAFKA/"  $KAFKA_HOME/config/server-$index.properties >>  $KAFKA_HOME/config/server-$index.properties.tmp &&
         		sed "s/log.dirs.*/log.dirs=$KAFKA_PATH\/kafka-logs-$index/"  $KAFKA_HOME/config/server-$index.properties >>  $KAFKA_HOME/config/server-$index.properties.tmp &&
 			mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
+			
+			#to be deleted
+			sed "s/dataDir.*/dataDir=$KAFKA_PATH"  $KAFKA_HOME/config/zookeeper.properties >>  $KAFKA_HOME/config/zookeeper.properties.tmp &&
+        		mv  $KAFKA_HOME/config/zookeeper.properties.tmp  $KAFKA_HOME/config/zookeeper.properties
 		fi
 		
 		#path=$path"/kakfa-logs-$HOSTNAME_KAFKA/.lock"
