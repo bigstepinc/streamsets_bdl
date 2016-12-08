@@ -140,7 +140,7 @@ while read line; do
         		mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
 		fi
 		
-		path=$path"/.lock"
+		path=$path"/kakfa-logs-$HOSTNAME_KAFKA/.lock"
 		rm $path
 
 		# Start Kafka Manager Service
