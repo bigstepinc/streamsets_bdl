@@ -18,17 +18,25 @@ nslookup $HOSTNAME_ZOOKEEPER >> zk.cluster
 # Configure Zookeeper
 NO=$(($(wc -l < zk.cluster) - 2))
 
-while [ $NO -lt 1 ] ; do
-	while read line; do
-		ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-		echo "$ip" >> zk.cluster.tmp
-	done < 'zk.cluster'	
-sleep 5
-nslookup $HOSTNAME_ZOOKEEPER > zk.cluster
+if [ $NO -ge 1 ] ; then
+	while read line; do                                                                                                        
+                ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
+                echo "$ip" >> zk.cluster.tmp                                                                                       
+        done < 'zk.cluster' 
+else
+	while [ $NO -lt 1 ] ; do
+		while read line; do
+			ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
+			echo "$ip" >> zk.cluster.tmp
+		done < 'zk.cluster'	
+		sleep 5
+		nslookup $HOSTNAME_ZOOKEEPER > zk.cluster
 
-# Configure Zookeeper
-NO=$(($(wc -l < zk.cluster) - 2))
-done
+		# Configure Zookeeper
+		NO=$(($(wc -l < zk.cluster) - 2))
+	done
+fi	
+
 	
 rm zk.cluster
 
@@ -51,16 +59,23 @@ nslookup $HOSTNAME_KAFKA >> kafka.cluster
 
 NOK=$(($(wc -l < kafka.cluster) - 2))
 
-while [ $NOK -lt 1 ] ; do
-	while read line; do
-		ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-		echo "$ip" >> kafka.cluster.tmp
-	done < 'kafka.cluster'
+if [ $NOK -ge 1 ] ; then
+	while read line; do                                                                                                        
+                ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
+                echo "$ip" >> kafka.cluster.tmp                                                                                    
+        done < 'kafka.cluster'
+else
+	while [ $NOK -lt 1 ] ; do
+		while read line; do
+			ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
+			echo "$ip" >> kafka.cluster.tmp
+		done < 'kafka.cluster'
 
-nslookup $HOSTNAME_KAFKA > kafka.cluster
+		nslookup $HOSTNAME_KAFKA > kafka.cluster
 
-NOK=$(($(wc -l < kafka.cluster) - 2))
-done
+		NOK=$(($(wc -l < kafka.cluster) - 2))
+	done
+fi
 
 rm kafka.cluster
 
