@@ -136,6 +136,9 @@ while read line; do
 			sed "s/log.dirs.*/log.dirs=$KAFKA_PATH\/kafka-logs-$HOSTNAME_KAFKA/"  $KAFKA_HOME/config/server-$index.properties >>  $KAFKA_HOME/config/server-$index.properties.tmp &&
         		mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
 		fi
+		
+		path=$path"/.lock"
+		rm $path
 
 		# Start Kafka Manager Service
 		$KAFKA_MANAGER_HOME/bin/kafka-manager -Dkafka-manager.zkhosts=$ZKHOSTS > /dev/null &
