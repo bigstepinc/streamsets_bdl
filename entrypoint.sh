@@ -12,7 +12,7 @@ cd $KAFKA_HOME && \
 cd ./config 
 touch hosts
 
-sleep 5
+sleep 15
 nslookup $HOSTNAME_ZOOKEEPER >> zk.cluster
 
 # Configure Zookeeper
