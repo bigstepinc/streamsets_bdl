@@ -182,6 +182,6 @@ while read line; do
 		$KAFKA_MANAGER_HOME/bin/kafka-manager -Dkafka-manager.zkhosts=$ZKHOSTS > /dev/null &
 
 		# Start Kafka servicE
-		$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server-${index}.properties
+		$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server-$index.properties
 	fi
 done < '/opt/kafka_2.11-0.10.1.0/config/kafka.cluster.tmp'
