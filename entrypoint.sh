@@ -184,4 +184,4 @@ while read line; do
 		# Start Kafka servicE
 		$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server-${index}.properties
 	fi
-done < 'kafka.cluster.tmp'
+done < '/kafka.cluster.tmp'
