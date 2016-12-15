@@ -161,6 +161,9 @@ while read line; do
 		sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp && \
 		mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
 		
+		sed "s/zookeeper.connect=127.0.0.1:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/consumer.properties >> $KAFKA_HOME/config/consumer.properties.tmp
+		mv $KAFKA_HOME/config/consumer.properties.tmp $KAFKA_HOME/config/consumer.properties
+		
 		if [ "$KAFKA_PATH" != "" ]; then
 			path1=$(echo $KAFKA_PATH | tr "\\" " " | awk '{ print $1 }')
 			path2=$(echo $KAFKA_PATH | tr "\\" " " | awk '{ print $2 }')
@@ -182,6 +185,9 @@ while read line; do
 		rm $path
 	fi
 done < '/opt/kafka_2.11-0.10.1.0/config/kafka.cluster.tmp'
+
+sed "s/bootstrap.servers=localhost:9092/bootstrap.servers=$local_ip:9092/" $KAFKA_HOME/config/producer.properties >> $KAFKA_HOME/config/producer.properties.tmp
+mv $KAFKA_HOME/config/producer.properties.tmp $KAFKA_HOME/config/producer.properties
 
 # Start Kafka Manager Service
 $KAFKA_MANAGER_HOME/bin/kafka-manager -Dkafka-manager.zkhosts=$ZKHOSTS -Dapplication.home=$path  > /dev/null &
