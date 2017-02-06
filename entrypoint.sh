@@ -22,7 +22,7 @@ while [ $NO_ZK -le $NO_ZOOKEEPER ] ; do
         rm -rf zk.cluster
         nslookup $HOSTNAME_ZOOKEEPER > zk.cluster
         NO_ZK=$(($(wc -l < zk.cluster) - 2))
-	NO_ZK=$(($no_instances + 1))
+	NO_ZK=$(($NO_ZK + 1))
 done
 
 # Configure Zookeeper
