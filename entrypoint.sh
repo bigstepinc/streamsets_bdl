@@ -53,7 +53,7 @@ while read line; do
       echo "$ip" >> zk.cluster.tmp                                                                                       
 done < 'zk.cluster'
 
-rm zk.cluster
+#rm zk.cluster
 	
 #while read line; do                                                                                                        
 #                ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
@@ -148,11 +148,11 @@ rm hosts.txt
 touch hosts 
 
 if [ "$HOSTNAME_ZOOKEEPER" != "" ]; then
-	sleep 5
-	nslookup $HOSTNAME_ZOOKEEPER >> zk.cluster
+	#sleep 5
+	#nslookup $HOSTNAME_ZOOKEEPER >> zk.cluster
 
-	echo "the zookeeper cluster is the following one"
-	cat zk.cluster
+	#echo "the zookeeper cluster is the following one"
+	#cat zk.cluster
 
 	# Configure Zookeeper
 	NO=$(($(wc -l < zk.cluster) - 2))
