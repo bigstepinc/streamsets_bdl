@@ -16,36 +16,36 @@ sleep 15
 nslookup $HOSTNAME_ZOOKEEPER > zk.cluster
 
 # Configure Zookeeper
-NO_ZK=$(($(wc -l < zk.cluster) - 2))
-
-while [ $NO_ZK -le $NO_ZOOKEEPER ] ; do
-        rm -rf zk.cluster
-        nslookup $HOSTNAME_ZOOKEEPER > zk.cluster
-        NO_ZK=$(($(wc -l < zk.cluster) - 2))
-	NO_ZK=$(($NO_ZK + 1))
-done
-
-# Configure Zookeeper
 #NO_ZK=$(($(wc -l < zk.cluster) - 2))
 
-#if [ $NO_ZK -ge 1 ] ; then
-#	while read line; do                                                                                                        
-#                ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-#                echo "$ip" >> zk.cluster.tmp                                                                                       
-#        done < 'zk.cluster' 
-#else#
-#	while [ $NO_ZK -lt 1 ] ; do
-#		while read line; do
-##			ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-#echo "$ip" >> zk.cluster.tmp
-#		done < 'zk.cluster'	
-#		sleep 5
-#		nslookup $HOSTNAME_ZOOKEEPER > zk.cluster
-#
-#		# Configure Zookeeper
-#		NO_ZK=$(($(wc -l < zk.cluster) - 2))
-#	done
-#fi	
+#while [ $NO_ZK -le $NO_ZOOKEEPER ] ; do
+#        rm -rf zk.cluster
+#        nslookup $HOSTNAME_ZOOKEEPER > zk.cluster
+#        NO_ZK=$(($(wc -l < zk.cluster) - 2))#
+#	NO_ZK=$(($NO_ZK + 1))
+#done
+
+# Configure Zookeeper
+NO_ZK=$(($(wc -l < zk.cluster) - 2))
+
+if [ $NO_ZK -ge 1 ] ; then
+	while read line; do                                                                                                        
+                ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
+                echo "$ip" >> zk.cluster.tmp                                                                                       
+        done < 'zk.cluster' 
+else
+	while [ $NO_ZK -lt 1 ] ; do
+		while read line; do
+			ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
+echo "$ip" >> zk.cluster.tmp
+		done < 'zk.cluster'	
+		sleep 5
+		nslookup $HOSTNAME_ZOOKEEPER > zk.cluster
+
+		# Configure Zookeeper
+		NO_ZK=$(($(wc -l < zk.cluster) - 2))
+	done
+fi	
 
 while read line; do                                                                                                        
       ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
