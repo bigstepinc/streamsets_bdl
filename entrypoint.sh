@@ -13,15 +13,14 @@ cd ./config
 touch hosts
 
 sleep 15
-nslookup $HOSTNAME_ZOOKEEPER >> zk.cluster
+nslookup $HOSTNAME_ZOOKEEPER > zk.cluster
 
 # Configure Zookeeper
 NO_ZK=$(($(wc -l < zk.cluster) - 2))
 
 while [ $NO_ZK -le $NO_ZOOKEEPER ] ; do
         rm -rf zk.cluster
-        nslookup $HOSTNAME_ZOOKEEPER
-        nslookup $HOSTNAME_ZOOKEEPER >> zk.cluster
+        nslookup $HOSTNAME_ZOOKEEPER > zk.cluster
         NO_ZK=$(($(wc -l < zk.cluster) - 2))
 	NO_ZK=$(($no_instances + 1))
 done
@@ -75,7 +74,7 @@ done < 'zk.cluster.tmp'
 
 index=0
 
-nslookup $HOSTNAME_KAFKA >> kafka.cluster
+nslookup $HOSTNAME_KAFKA > kafka.cluster
 
 NO_K=$(($(wc -l < kafka.cluster) - 2))
 
@@ -100,8 +99,7 @@ NO_K=$(($(wc -l < kafka.cluster) - 2))
 
 while [ $NO_K -le $NO ] ; do
         rm -rf kafka.cluster
-        nslookup $HOSTNAME_KAFKA
-        nslookup $HOSTNAME_KAFKA >> kafka.cluster
+        nslookup $HOSTNAME_KAFKA > kafka.cluster
         NO_K=$(($(wc -l < kafka.cluster) - 2))
 	NO_K=$(($NO_K + 1))
 done
