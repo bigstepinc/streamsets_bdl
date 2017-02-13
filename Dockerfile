@@ -1,7 +1,8 @@
-FROM mcristinagrosu/bigstepinc_java_8
-
-RUN apk update 
-RUN apk add --no-cache openssh wget tar bash curl unzip alpine-sdk
+FROM ubuntu:vivid
+ 
+RUN apt-get update \
+ && apt-get -y install wget tar openjdk-8-jdk openssh curl unzip \
+ && apt-get clean 
 
 # Apache Kafka
 RUN cd /opt && \
@@ -43,8 +44,6 @@ ADD entrypoint.sh /opt/entrypoint.sh
 
 RUN chmod 777 /opt/entrypoint.sh
 RUN chmod 777 /usr/bin/start-kafka-manager.sh
-
-RUN apk del wget tar curl unzip
 
 #RUN /opt/entrypoint.sh
 
