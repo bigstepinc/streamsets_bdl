@@ -1,7 +1,7 @@
 FROM ubuntu:vivid
  
 RUN apt-get update \
- && apt-get -y install wget tar openjdk-8-jdk curl git unzip \
+ && apt-get -y install wget tar openjdk-8-jdk curl git unzip dnsutils  net-tools \
  && apt-get clean 
 
 # Apache Kafka
