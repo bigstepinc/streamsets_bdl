@@ -213,7 +213,7 @@ while read line; do
 		fi
 		
 		#path=$path"/kakfa-logs-$HOSTNAME_KAFKA/.lock"
-		path=$path"/kakfa-logs-$index/.lock"
+		path=$path"/kafka-logs-$index/.lock"
 		rm $path
 	fi
 done < '/opt/kafka_2.11-0.10.1.0/config/kafka.cluster.tmp'
