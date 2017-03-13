@@ -62,6 +62,8 @@ done < 'zk.cluster'
 sort -n zk.cluster.tmp > zk.cluster.tmp.sort
 mv zk.cluster.tmp.sort zk.cluster.tmp
 
+tail --lines $NO_ZOOKEEPER zk.cluster.tmp > zk.cluster.new
+
 no_instances=1
 while read line; do
         if [ "$line" != "" ]; then
@@ -70,7 +72,7 @@ while read line; do
 		echo "$(cat hosts) $line:2181" >  hosts
 		no_instances=$(($no_instances + 1))
 	fi
-done < 'zk.cluster.tmp'
+done < 'zk.cluster.new'
 
 index=0
 
@@ -114,6 +116,8 @@ rm kafka.cluster
 sort -n kafka.cluster.tmp > kafka.cluster.tmp.sort
 mv kafka.cluster.tmp.sort kafka.cluster.tmp
 
+tail --lines $NO kafka.cluster.tmp > kafka.cluster.new
+
 index=1
 
 while read line; do
@@ -133,7 +137,7 @@ while read line; do
 			index=$(($index + 1))
 		fi
 	fi
-done < 'kafka.cluster.tmp'
+done < 'kafka.cluster.new'
 
 # configure all the hosts in the cluster in the server.properties file
 sed -i 's/^ *//' hosts 
@@ -163,6 +167,8 @@ if [ "$HOSTNAME_ZOOKEEPER" != "" ]; then
 
 	sort -n zk.cluster.tmp > zk.cluster.tmp.sort
 	mv zk.cluster.tmp.sort zk.cluster.tmp
+	
+	tail --lines $NO_ZOOKEEPER zk.cluster.tmp > zk.cluster.new
 
 	no_instances=1
 	while read line; do
@@ -170,7 +176,7 @@ if [ "$HOSTNAME_ZOOKEEPER" != "" ]; then
 			echo "$(cat hosts) $line:2181" >  hosts
 			no_instances=$(($no_instances + 1))
 		fi
-	done < 'zk.cluster.tmp'
+	done < 'zk.cluster.new'
 
 fi
 
@@ -216,7 +222,7 @@ while read line; do
 		path=$path"/kafka-logs-$index/.lock"
 		rm $path
 	fi
-done < '/opt/kafka_2.11-0.10.1.0/config/kafka.cluster.tmp'
+done < '/opt/kafka_2.11-0.10.1.0/config/kafka.cluster.new'
 
 sed "s/bootstrap.servers=localhost:9092/bootstrap.servers=$local_ip:9092/" $KAFKA_HOME/config/producer.properties >> $KAFKA_HOME/config/producer.properties.tmp
 mv $KAFKA_HOME/config/producer.properties.tmp $KAFKA_HOME/config/producer.properties
