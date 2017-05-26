@@ -32,4 +32,4 @@ for e in $(env); do
   fi
 done
 
-exec "${SDC_DIST}/bin/streamsets dc" "$@"
+${SDC_DIST}/bin/streamsets dc
