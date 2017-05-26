@@ -39,7 +39,7 @@ ENV SDC_DATA=/streamsets/data \
     SDC_DIST="/streamsets/streamsets-datacollector-${SDC_VERSION}" \
     SDC_LOG=/streamsets/logs \
     SDC_RESOURCES=/streamsets/resources \
-    SDC_CONF="${SDC_DIST}/etc/sdc" \
+    SDC_CONF="${SDC_DIST}/etc/sdc" 
 ENV STREAMSETS_LIBRARIES_EXTRA_DIR="${SDC_DIST}/streamsets-libs-extras"
 
 #RUN addgroup -S -g ${SDC_UID} ${SDC_USER} && \
