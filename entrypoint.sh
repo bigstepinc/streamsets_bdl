@@ -1,234 +1,35 @@
 #!/bin/bash
+set -e
 
-#Setup environment
-ifconfig | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b" >> output
-local_ip=$(head -n1 output)
-rm output
+# We translate environment variables to sdc.properties and rewrite them.
+set_conf() {
+  if [ $# -ne 2 ]; then
+    echo "set_conf requires two arguments: <key> <value>"
+    exit 1
+  fi
 
-# Retrieve the instances in the Kafka cluster
-mkdir /tmp/zookeeper && mkdir /tmp/kafka-logs
+  if [ -z "$SDC_CONF" ]; then
+    echo "SDC_CONF is not set."
+    exit 1
+  fi
 
-cd $KAFKA_HOME && \
-cd ./config 
-touch hosts
+  sed -i 's|^#\?\('"$1"'=\).*|\1'"$2"'|' "${SDC_CONF}/sdc.properties"
+}
 
-sleep 15
-nslookup $HOSTNAME_ZOOKEEPER > zk.cluster
-
-# Configure Zookeeper
-NO_ZK=$(($(wc -l < zk.cluster) - 2))
-
-while [ $NO_ZK -le $NO_ZOOKEEPER ] ; do
-        rm -rf zk.cluster
-        nslookup $HOSTNAME_ZOOKEEPER > zk.cluster
-        NO_ZK=$(($(wc -l < zk.cluster) - 2))#
-	NO_ZK=$(($NO_ZK + 1))
-done
-
-# Configure Zookeeper
-#NO_ZK=$(($(wc -l < zk.cluster) - 2))#
-
-#if [ $NO_ZK -ge 1 ] ; then#
-#	while read line; do                                                                                                        
-#                ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-#                echo "$ip" >> zk.cluster.tmp                                                                                       
-#        done < 'zk.cluster' 
-#else#
-#	while [ $NO_ZK -lt 1 ] ; do
-#		while read line; do
-#			ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-#echo "$ip" >> zk.cluster.tmp
-#		done < 'zk.cluster'	
-#		sleep 5
-#		nslookup $HOSTNAME_ZOOKEEPER > zk.cluster
-
-		# Configure Zookeeper
-#		NO_ZK=$(($(wc -l < zk.cluster) - 2))
-#	done
-#fi	
-
-while read line; do                                                                                                        
-      ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-      echo "$ip" >> zk.cluster.tmp                                                                                       
-done < 'zk.cluster'
-
-#rm zk.cluster
-	
-#while read line; do                                                                                                        
-#                ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-#                echo "$ip" >> zk.cluster.tmp                                                                                       
-#        done < 'zk.cluster'
-
-sort -n zk.cluster.tmp > zk.cluster.tmp.sort
-mv zk.cluster.tmp.sort zk.cluster.tmp
-
-tail --lines $NO_ZOOKEEPER zk.cluster.tmp > zk.cluster.new
-
-no_instances=1
-while read line; do
-        if [ "$line" != "" ]; then
-		myindex=$(echo $line | sed -e 's/\.//g')
-		echo "server.$myindex=$line:2888:3888" >> $KAFKA_HOME/config/zookeeper.properties
-		echo "$(cat hosts) $line:2181" >  hosts
-		no_instances=$(($no_instances + 1))
-	fi
-done < 'zk.cluster.new'
-
-index=0
-
-nslookup $HOSTNAME_KAFKA > kafka.cluster
-
-NO_K=$(($(wc -l < kafka.cluster) - 2))
-
-#This section is completely commented
-#if [ $NOK -ge 1 ] ; then#
-#	while read line; do                                                                                                        
-#                ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-#                echo "$ip" >> kafka.cluster.tmp                                                                                    
-#        done < 'kafka.cluster'
-#else#
-#	while [ $NOK -lt 1 ] ; do
-#		while read line; do
-#			ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-#			echo "$ip" >> kafka.cluster.tmp
-#		done < 'kafka.cluster'
-#
-#		nslookup $HOSTNAME_KAFKA > kafka.cluster
-#
-#		NOK=$(($(wc -l < kafka.cluster) - 2))
-#	done
-#fi
-
-while [ $NO_K -le $NO ] ; do
-        rm -rf kafka.cluster
-        nslookup $HOSTNAME_KAFKA > kafka.cluster
-        NO_K=$(($(wc -l < kafka.cluster) - 2))
-	NO_K=$(($NO_K + 1))
-done
-
-while read line; do
-	ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-	echo "$ip" >> kafka.cluster.tmp
-done < 'kafka.cluster'
-
-rm kafka.cluster
-
-sort -n kafka.cluster.tmp > kafka.cluster.tmp.sort
-mv kafka.cluster.tmp.sort kafka.cluster.tmp
-
-tail --lines $NO kafka.cluster.tmp > kafka.cluster.new
-
-index=1
-
-while read line; do
-	if [ "$line" != "" ]; then
-		if [ "$line" == "$local_ip" ]; then
-			oct3=$(echo $line | tr "." " " | awk '{ print $3 }')
-			oct4=$(echo $line | tr "." " " | awk '{ print $4 }')
-			index=$oct3$oct4
-			current_index=$index
-			cp $KAFKA_HOME/config/server.properties $KAFKA_HOME/config/server-$index.properties
-			sed "s/broker.id=0/broker.id=$index/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp
-			mv $KAFKA_HOME/config/server-$index.properties.tmp $KAFKA_HOME/config/server-$index.properties
-			
-			sed "s/#advertised.listeners=PLAINTEXT:\/\/your.host.name:9092/advertised.listeners=PLAINTEXT:\/\/$local_ip:9092/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp
-			mv $KAFKA_HOME/config/server-$index.properties.tmp $KAFKA_HOME/config/server-$index.properties
-		else
-			index=$(($index + 1))
-		fi
-	fi
-done < 'kafka.cluster.new'
-
-# configure all the hosts in the cluster in the server.properties file
-sed -i 's/^ *//' hosts 
-sed -e 's/\s/,/g' hosts > hosts.txt
-
-content=$(cat $KAFKA_HOME/config/hosts.txt)
-
-rm hosts.txt
-
-touch hosts 
-
-if [ "$HOSTNAME_ZOOKEEPER" != "" ]; then
-	#sleep 5
-	#nslookup $HOSTNAME_ZOOKEEPER >> zk.cluster
-
-	#echo "the zookeeper cluster is the following one"
-	#cat zk.cluster
-
-	# Configure Zookeeper
-	NO=$(($(wc -l < zk.cluster) - 2))
-
-	while read line; do
-		ip=$(echo $line | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-		echo "$ip" >> zk.cluster.tmp
-	done < 'zk.cluster'
-	rm zk.cluster
-
-	sort -n zk.cluster.tmp > zk.cluster.tmp.sort
-	mv zk.cluster.tmp.sort zk.cluster.tmp
-	
-	tail --lines $NO_ZOOKEEPER zk.cluster.tmp > zk.cluster.new
-
-	no_instances=1
-	while read line; do
-        	if [ "$line" != "" ]; then
-			echo "$(cat hosts) $line:2181" >  hosts
-			no_instances=$(($no_instances + 1))
-		fi
-	done < 'zk.cluster.new'
-
+# In some environments such as Marathon $HOST and $PORT0 can be used to
+# determine the correct external URL to reach SDC.
+if [ ! -z "$HOST" ] && [ ! -z "$PORT0" ] && [ -z "$SDC_CONF_SDC_BASE_HTTP_URL" ]; then
+  export SDC_CONF_SDC_BASE_HTTP_URL="http://${HOST}:${PORT0}"
 fi
 
-sed -i 's/^ *//' hosts 
-sed -e 's/\s/,/g' hosts > hosts.txt
+for e in $(env); do
+  key=${e%=*}
+  value=${e#*=}
+  if [[ $key == SDC_CONF_* ]]; then
+    lowercase=$(echo $key | tr '[:upper:]' '[:lower:]')
+    key=$(echo ${lowercase#*sdc_conf_} | sed 's|_|.|g')
+    set_conf $key $value
+  fi
+done
 
-content=$(cat hosts.txt)
-ZKHOSTS=$content
-
-rm hosts
-rm hosts.txt
-
-while read line; do
-	
-	oct3=$(echo $line | tr "." " " | awk '{ print $3 }')
-	oct4=$(echo $line | tr "." " " | awk '{ print $4 }')
-	index=$oct3$oct4
-	
-	if [ "$index" == "$current_index" ] ; then
-		sed "s/zookeeper.connect=localhost:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/server-$index.properties >> $KAFKA_HOME/config/server-$index.properties.tmp && \
-		mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
-		
-		sed "s/zookeeper.connect=127.0.0.1:2181/zookeeper.connect=$content/" $KAFKA_HOME/config/consumer.properties >> $KAFKA_HOME/config/consumer.properties.tmp
-		mv $KAFKA_HOME/config/consumer.properties.tmp $KAFKA_HOME/config/consumer.properties
-		
-		if [ "$KAFKA_PATH" != "" ]; then
-			path1=$(echo $KAFKA_PATH | tr "\\" " " | awk '{ print $1 }')
-			path2=$(echo $KAFKA_PATH | tr "\\" " " | awk '{ print $2 }')
-			path3=$(echo $KAFKA_PATH | tr "\\" " " | awk '{ print $3 }')
-			path=$path1$path2$path3
-			#cd $path && mkdir kafka-logs-$HOSTNAME_KAFKA
-			cd $path && mkdir kafka-logs-$index
-			#sed "s/log.dirs.*/log.dirs=$KAFKA_PATH\/kafka-logs-$HOSTNAME_KAFKA/"  $KAFKA_HOME/config/server-$index.properties >>  $KAFKA_HOME/config/server-$index.properties.tmp &&
-        		sed "s/log.dirs.*/log.dirs=$KAFKA_PATH\/kafka-logs-$index/"  $KAFKA_HOME/config/server-$index.properties >>  $KAFKA_HOME/config/server-$index.properties.tmp &&
-			mv  $KAFKA_HOME/config/server-$index.properties.tmp  $KAFKA_HOME/config/server-$index.properties
-			
-			#to be deleted
-			sed "s/dataDir.*/dataDir=$KAFKA_PATH"  $KAFKA_HOME/config/zookeeper.properties >>  $KAFKA_HOME/config/zookeeper.properties.tmp &&
-        		mv  $KAFKA_HOME/config/zookeeper.properties.tmp  $KAFKA_HOME/config/zookeeper.properties
-		fi
-		
-		#path=$path"/kakfa-logs-$HOSTNAME_KAFKA/.lock"
-		path=$path"/kafka-logs-$index/.lock"
-		rm $path
-	fi
-done < '/opt/kafka_2.11-0.10.1.0/config/kafka.cluster.new'
-
-sed "s/bootstrap.servers=localhost:9092/bootstrap.servers=$local_ip:9092/" $KAFKA_HOME/config/producer.properties >> $KAFKA_HOME/config/producer.properties.tmp
-mv $KAFKA_HOME/config/producer.properties.tmp $KAFKA_HOME/config/producer.properties
-
-# Start Kafka Manager Service
-$KAFKA_MANAGER_HOME/bin/kafka-manager -Dkafka-manager.zkhosts=$ZKHOSTS -Dapplication.home=$path  > /dev/null &
-
-# Start Kafka servicE
-$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server-$current_index.properties
+exec "${SDC_DIST}/bin/streamsets" "$@"
