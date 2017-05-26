@@ -56,6 +56,7 @@ RUN sed -i 's|INFO, streamsets|INFO, streamsets,stdout|' "${SDC_DIST}/etc/sdc-lo
 
 # Create necessary directories.
 RUN mkdir -p /mnt \
+    /streamsets \
     "${SDC_DATA}" \
     "${SDC_LOG}" \
     "${SDC_RESOURCES}"
