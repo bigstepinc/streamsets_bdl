@@ -1,52 +1,80 @@
-FROM ubuntu:vivid
- 
-RUN apt-get update \
- && apt-get -y install wget tar openjdk-8-jdk curl git unzip dnsutils  net-tools \
- && apt-get clean 
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+#
 
-# Apache Kafka
-RUN cd /opt && \
-    wget http://apache.mirror.anlx.net/kafka/0.10.1.0/kafka_2.11-0.10.1.0.tgz 
-    
-RUN cd /opt && \
-    tar xzvf /opt/kafka_2.11-0.10.1.0.tgz 
-    
-ENV KAFKA_HOME /opt/kafka_2.11-0.10.1.0 
+FROM mcristinagrosu/bigstepinc_java_8_ubuntu
 
-RUN rm -rf /opt/kafka_2.11-0.10.1.0.tgz
+ARG SDC_URL=http://archives.streamsets.com/datacollector/2.5.1.1/tarball/streamsets-datacollector-core-2.5.1.1.tgz
+#ARG SDC_USER=sdc
+ARG SDC_VERSION=2.5.1.1
 
-# Install Kafka and Kafka Manager
-ENV SBT_VERSION 0.13.11
-ENV SBT_HOME /usr/local/sbt
-ENV PATH ${PATH}:${SBT_HOME}/bin
+# We set a UID/GID for the SDC user because certain test environments require these to be consistent throughout
+# the cluster. We use 20159 because it's above the default value of YARN's min.user.id property.
+#ARG SDC_UID=20159
 
-# Install sbt
-RUN curl -sL "http://dl.bintray.com/sbt/native-packages/sbt/$SBT_VERSION/sbt-$SBT_VERSION.tgz" | gunzip | tar -x -C /usr/local && \
-    echo -ne "- with sbt $SBT_VERSION\n" >> /root/.built
+# The paths below should generally be attached to a VOLUME for persistence.
+# SDC_CONF is where configuration files are stored. This can be shared.
+# SDC_DATA is a volume for storing collector state. Do not share this between containers.
+# SDC_LOG is an optional volume for file based logs.
+# SDC_RESOURCES is where resource files such as runtime:conf resources and Hadoop configuration can be placed.
+# STREAMSETS_LIBRARIES_EXTRA_DIR is where extra libraries such as JDBC drivers should go.
+ENV SDC_CONF=/streamsets/etc/sdc \
+    SDC_DATA=/streamsets/data \
+    SDC_DIST="/streamsets/streamsets-datacollector-${SDC_VERSION}" \
+    SDC_LOG=/streamsets/logs \
+    SDC_RESOURCES=/streamsets/resources
+ENV STREAMSETS_LIBRARIES_EXTRA_DIR="${SDC_DIST}/streamsets-libs-extras"
+
+#RUN addgroup -S -g ${SDC_UID} ${SDC_USER} && \
+#    adduser -S -u ${SDC_UID} -G ${SDC_USER} ${SDC_USER}
 
 RUN cd /tmp && \
-    curl -sL "http://dl.bintray.com/sbt/native-packages/sbt/$SBT_VERSION/sbt-$SBT_VERSION.tgz" | gunzip | tar -x -C /usr/local && \
-    echo -ne "- with sbt $SBT_VERSION\n" >> /root/.built &&\
-    git clone https://github.com/yahoo/kafka-manager.git && \
-    cd kafka-manager && \
-    sbt clean dist && \
-    mv ./target/universal/kafka-manager*.zip /opt && \
-    cd /opt && \
-    unzip kafka-manager*.zip && \
-    ln -s $(find kafka-manager* -type d -prune) kafka-manager
-    
-RUN rm /opt/kafka-manager*.zip
+    curl -o /tmp/sdc.tgz -L "${SDC_URL}" && \
+    mkdir /streamsets/streamsets-datacollector-${SDC_VERSION} && \
+    tar xzf /tmp/sdc.tgz --strip-components 1 -C /streamsets/streamsets-datacollector-${SDC_VERSION} && \
+    rm -rf /tmp/sdc.tgz
 
-ENV KAFKA_MANAGER_HOME /opt/kafka-manager
+# Add logging to stdout to make logs visible through `docker logs`.
+RUN sed -i 's|INFO, streamsets|INFO, streamsets,stdout|' "${SDC_DIST}/etc/sdc-log4j.properties"
 
-ADD start-kafka-manager.sh /usr/bin/
-ADD entrypoint.sh /opt/entrypoint.sh
+# Create necessary directories.
+RUN mkdir -p /mnt \
+    "${SDC_DATA}" \
+    "${SDC_LOG}" \
+    "${SDC_RESOURCES}"
 
-RUN chmod 777 /opt/entrypoint.sh
-RUN chmod 777 /usr/bin/start-kafka-manager.sh
+# Move configuration to /etc/sdc
+RUN mv "${SDC_DIST}/etc" "${SDC_CONF}"
 
-#RUN /opt/entrypoint.sh
+# Use short option -s as long option --status is not supported on alpine linux.
+RUN sed -i 's|--status|-s|' "${SDC_DIST}/libexec/_stagelibs"
 
-EXPOSE 2181 2888 3888 9092 9000
+# Setup filesystem permissions.
+#RUN chown -R "${SDC_USER}:${SDC_USER}" "${SDC_DIST}/streamsets-libs" \
+#    "${SDC_CONF}" \
+#    "${SDC_DATA}" \
+#    "${SDC_LOG}" \
+#    "${SDC_RESOURCES}" \
+#    "${STREAMSETS_LIBRARIES_EXTRA_DIR}"
 
-ENTRYPOINT ["/opt/entrypoint.sh"]
+#USER ${SDC_USER}
+EXPOSE 18630
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
