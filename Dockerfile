@@ -44,6 +44,7 @@ ENV STREAMSETS_LIBRARIES_EXTRA_DIR="${SDC_DIST}/streamsets-libs-extras"
 
 #RUN addgroup -S -g ${SDC_UID} ${SDC_USER} && \
 #    adduser -S -u ${SDC_UID} -G ${SDC_USER} ${SDC_USER}
+RUN mkdir /streamsets/
 
 RUN cd /tmp && \
     curl -o /tmp/sdc.tgz -L "${SDC_URL}" && \
@@ -56,7 +57,6 @@ RUN sed -i 's|INFO, streamsets|INFO, streamsets,stdout|' "${SDC_DIST}/etc/sdc-lo
 
 # Create necessary directories.
 RUN mkdir -p /mnt \
-    /streamsets \
     "${SDC_DATA}" \
     "${SDC_LOG}" \
     "${SDC_RESOURCES}"
