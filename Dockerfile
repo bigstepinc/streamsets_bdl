@@ -35,11 +35,11 @@ ARG SDC_VERSION=2.5.1.1
 # SDC_LOG is an optional volume for file based logs.
 # SDC_RESOURCES is where resource files such as runtime:conf resources and Hadoop configuration can be placed.
 # STREAMSETS_LIBRARIES_EXTRA_DIR is where extra libraries such as JDBC drivers should go.
-ENV SDC_CONF=/streamsets/etc/sdc \
-    SDC_DATA=/streamsets/data \
+ENV SDC_DATA=/streamsets/data \
     SDC_DIST="/streamsets/streamsets-datacollector-${SDC_VERSION}" \
     SDC_LOG=/streamsets/logs \
-    SDC_RESOURCES=/streamsets/resources
+    SDC_RESOURCES=/streamsets/resources \
+    SDC_CONF="${SDC_DIST}/etc/sdc" \
 ENV STREAMSETS_LIBRARIES_EXTRA_DIR="${SDC_DIST}/streamsets-libs-extras"
 
 #RUN addgroup -S -g ${SDC_UID} ${SDC_USER} && \
@@ -62,7 +62,7 @@ RUN mkdir -p /mnt \
     "${SDC_RESOURCES}"
 
 # Move configuration to /etc/sdc
-RUN mv "${SDC_DIST}/etc" "${SDC_CONF}"
+#RUN mv "${SDC_DIST}/etc" "${SDC_CONF}"
 
 # Use short option -s as long option --status is not supported on alpine linux.
 RUN sed -i 's|--status|-s|' "${SDC_DIST}/libexec/_stagelibs"
