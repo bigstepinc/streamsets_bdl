@@ -78,4 +78,6 @@ RUN sed -i 's|--status|-s|' "${SDC_DIST}/libexec/_stagelibs"
 #USER ${SDC_USER}
 EXPOSE 18630
 COPY entrypoint.sh /
+RUN chmod 777 /entrypoint.sh
+
 ENTRYPOINT ["/entrypoint.sh"]
