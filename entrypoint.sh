@@ -36,13 +36,13 @@ chmod -R 777 "${SDC_CONF}"
 
 if [ "$ADMIN_PASSWORD" != "" ]; then
   pass=$(echo -n "$ADMIN_PASSWORD"| md5sum | cut -d ' ' -f 1)
-  sed "s/admin:   MD5:.*,/admin:   MD5:$pass,/" "${SDC_CONF}/basic-realm.properties" >> "${SDC_CONF}/basic-realm.properties.tmp" && \
+  sed "s/admin:   MD5:.*,user,admin/admin:   MD5:$pass,user,admin/" "${SDC_CONF}/basic-realm.properties" >> "${SDC_CONF}/basic-realm.properties.tmp" && \
   mv "${SDC_CONF}/basic-realm.properties.tmp" "${SDC_CONF}/basic-realm.properties"
   
-  sed "s/admin:   MD5:.*,/admin:   MD5:$pass,/" "${SDC_CONF}/digest-realm.properties" >> "${SDC_CONF}/digest-realm.properties.tmp" && \
+  sed "s/admin:   MD5:.*,user,admin/admin:   MD5:$pass,user,admin/" "${SDC_CONF}/digest-realm.properties" >> "${SDC_CONF}/digest-realm.properties.tmp" && \
   mv "${SDC_CONF}/digest-realm.properties.tmp" "${SDC_CONF}/digest-realm.properties"
   
-  sed "s/admin:   MD5:.*,/admin:   MD5:$pass,/" "${SDC_CONF}/form-realm.properties" >> "${SDC_CONF}/form-realm.properties.tmp" && \
+  sed "s/admin:   MD5:.*,user,admin/admin:   MD5:$pass,user,admin/" "${SDC_CONF}/form-realm.properties" >> "${SDC_CONF}/form-realm.properties.tmp" && \
   mv "${SDC_CONF}/form-realm.properties.tmp" "${SDC_CONF}/form-realm.properties"
   
   sed "s/http.realm.file.permission.check=true/http.realm.file.permission.check=false/" "${SDC_CONF}/sdc.properties" >> "${SDC_CONF}/sdc.properties.tmp" && \
