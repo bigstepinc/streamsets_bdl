@@ -32,4 +32,16 @@ for e in $(env); do
   fi
 done
 
+if [ "$ADMIN_PASSWORD" != "" ]; then
+  pass=$(echo -n "$ADMIN_PASSWORD"| md5sum | cut -d ' ' -f 1)
+  sed "s/admin:   MD5:.*,/admin:   MD5:$pass,/" "${SDC_CONF}/basic-realm.properties" >> "${SDC_CONF}/basic-realm.properties.tmp" && \
+	mv "${SDC_CONF}/basic-realm.properties.tmp" "${SDC_CONF}/basic-realm.properties"
+  
+  sed "s/admin:   MD5:.*,/admin:   MD5:$pass,/" "${SDC_CONF}/digest-realm.properties" >> "${SDC_CONF}/digest-realm.properties.tmp" && \
+	mv "${SDC_CONF}/digest-realm.properties.tmp" "${SDC_CONF}/digest-realm.properties"
+  
+  sed "s/admin:   MD5:.*,/admin:   MD5:$pass,/" "${SDC_CONF}/form-realm.properties" >> "${SDC_CONF}/form-realm.properties.tmp" && \
+	mv "${SDC_CONF}/form-realm.properties.tmp" "${SDC_CONF}/form-realm.properties"
+fi
+
 ${SDC_DIST}/bin/streamsets dc
