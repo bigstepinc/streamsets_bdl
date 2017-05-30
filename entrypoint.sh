@@ -32,6 +32,8 @@ for e in $(env); do
   fi
 done
 
+chmod -R 777 "${SDC_CONF}"
+
 if [ "$ADMIN_PASSWORD" != "" ]; then
   pass=$(echo -n "$ADMIN_PASSWORD"| md5sum | cut -d ' ' -f 1)
   sed "s/admin:   MD5:.*,/admin:   MD5:$pass,/" "${SDC_CONF}/basic-realm.properties" >> "${SDC_CONF}/basic-realm.properties.tmp" && \
