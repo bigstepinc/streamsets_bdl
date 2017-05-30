@@ -21,7 +21,7 @@
 
 FROM mcristinagrosu/bigstepinc_java_8_ubuntu
 
-ARG SDC_URL=http://archives.streamsets.com/datacollector/2.5.1.1/tarball/streamsets-datacollector-core-2.5.1.1.tgz
+ARG SDC_URL=https://archives.streamsets.com/datacollector/2.5.1.1/tarball/streamsets-datacollector-all-2.5.1.1.tgz
 #ARG SDC_USER=sdc
 ARG SDC_VERSION=2.5.1.1
 
