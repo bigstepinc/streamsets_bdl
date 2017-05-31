@@ -1,1 +1,1 @@
-# spark1.6-jupyter4.1
+# Streamsets 2.5.1.1
