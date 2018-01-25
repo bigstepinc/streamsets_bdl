@@ -21,9 +21,9 @@
 
 FROM mcristinagrosu/bigstepinc_java_8_ubuntu
 
-ARG SDC_URL=https://archives.streamsets.com/datacollector/3.0.2.0/tarball/streamsets-datacollector-core-3.0.2.0.tgz
+ARG SDC_URL=https://archives.streamsets.com/datacollector/3.0.3.0/tarball/streamsets-datacollector-core-3.0.3.0.tgz
 #ARG SDC_USER=sdc
-ARG SDC_VERSION=3.0.2.0
+ARG SDC_VERSION=3.0.3.0
 
 # We set a UID/GID for the SDC user because certain test environments require these to be consistent throughout
 # the cluster. We use 20159 because it's above the default value of YARN's min.user.id property.
