@@ -22,12 +22,12 @@
 FROM mcristinagrosu/bigstepinc_java_8_ubuntu
 
 ARG SDC_URL=https://archives.streamsets.com/datacollector/3.0.2.0/tarball/streamsets-datacollector-core-3.0.2.0.tgz
-#ARG SDC_USER=sdc
+ARG SDC_USER=sdc
 ARG SDC_VERSION=3.0.2.0
 
 # We set a UID/GID for the SDC user because certain test environments require these to be consistent throughout
 # the cluster. We use 20159 because it's above the default value of YARN's min.user.id property.
-#ARG SDC_UID=20159
+ARG SDC_UID=20159
 
 # The paths below should generally be attached to a VOLUME for persistence.
 # SDC_CONF is where configuration files are stored. This can be shared.
@@ -42,8 +42,8 @@ ENV SDC_DATA=/streamsets/data \
     SDC_CONF="/streamsets/streamsets-datacollector-${SDC_VERSION}/etc" 
 ENV STREAMSETS_LIBRARIES_EXTRA_DIR="${SDC_DIST}/streamsets-libs-extras"
 
-#RUN addgroup -S -g ${SDC_UID} ${SDC_USER} && \
-#    adduser -S -u ${SDC_UID} -G ${SDC_USER} ${SDC_USER}
+RUN addgroup -S -g ${SDC_UID} ${SDC_USER} && \
+    adduser -S -u ${SDC_UID} -G ${SDC_USER} ${SDC_USER}
 RUN mkdir /streamsets/
 
 RUN cd /tmp && \
@@ -69,14 +69,14 @@ RUN mkdir -p /mnt \
 RUN sed -i 's|--status|-s|' "${SDC_DIST}/libexec/_stagelibs"
 
 # Setup filesystem permissions.
-#RUN chown -R "${SDC_USER}:${SDC_USER}" "${SDC_DIST}/streamsets-libs" \
-#    "${SDC_CONF}" \
-#    "${SDC_DATA}" \
-#    "${SDC_LOG}" \
-#    "${SDC_RESOURCES}" \
-#    "${STREAMSETS_LIBRARIES_EXTRA_DIR}"
+RUN chown -R "${SDC_USER}:${SDC_USER}" "${SDC_DIST}/streamsets-libs" \
+    "${SDC_CONF}" \
+    "${SDC_DATA}" \
+    "${SDC_LOG}" \
+    "${SDC_RESOURCES}" \
+    "${STREAMSETS_LIBRARIES_EXTRA_DIR}"
 
-#USER ${SDC_USER}
+USER ${SDC_USER}
 EXPOSE 18630
 COPY entrypoint.sh /
 RUN chmod 777 /entrypoint.sh
