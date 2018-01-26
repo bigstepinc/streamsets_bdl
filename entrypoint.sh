@@ -8,6 +8,42 @@ set_conf() {
     exit 1
   fi
 
+if [ "$CONTAINER_DIR" != "" ]; then
+  export SDC_DATA="${CONTAINER_DIR}/data" 
+  export SDC_DIST="${CONTAINER_DIR}/streamsets-datacollector-${SDC_VERSION}" 
+  export SDC_LOG="${CONTAINER_DIR}/logs" 
+  export SDC_RESOURCES="${CONTAINER_DIR}/resources"
+  export SDC_CONF="${CONTAINER_DIR}/streamsets-datacollector-${SDC_VERSION}/etc" 
+  export STREAMSETS_LIBRARIES_EXTRA_DIR="${SDC_DIST}/streamsets-libs-extras"
+  
+  mkdir "${CONTAINER_DIR}"
+  
+  cd /tmp && \
+  mkdir "${SDC_DIST}" && \
+  tar xzf /tmp/sdc.tgz --strip-components 1 -C "${SDC_DIST}" && \
+  rm -rf /tmp/sdc.tgz
+  
+  sed -i 's|INFO, streamsets|INFO, streamsets,stdout|' "${SDC_DIST}/etc/sdc-log4j.properties"
+  
+  mkdir -p /mnt \
+  "${SDC_DATA}" \
+  "${SDC_LOG}" \
+  "${SDC_RESOURCES}" \
+  "${SDC_CONF}"
+  
+  sed -i 's|--status|-s|' "${SDC_DIST}/libexec/_stagelibs"
+  
+  chown -R "root:root" "${SDC_DIST}/streamsets-libs" \
+    "${SDC_CONF}" \
+    "${SDC_DATA}" \
+    "${SDC_LOG}" \
+    "${SDC_RESOURCES}" \
+    "${STREAMSETS_LIBRARIES_EXTRA_DIR}"
+    
+else
+  echo "The CONTAINER_DIR path is not set!"
+fi
+
   if [ -z "$SDC_CONF" ]; then
     echo "SDC_CONF is not set."
     exit 1
