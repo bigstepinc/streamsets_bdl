@@ -32,7 +32,13 @@ for e in $(env); do
   fi
 done
 
-chmod -R 777 "${SDC_CONF}"
+chmod -R 600 "${SDC_CONF}"
+
+if [ "$STREAMSETS_SECRETS_PATH" != "" ]; then
+  export ADMIN_PASSWORD=$(cat $STREAMSETS_SECRETS_PATH/ADMIN_PASSWORD)
+else 
+  echo "There is no secrets path"
+fi 
 
 if [ "$ADMIN_PASSWORD" != "" ]; then
   pass=$(echo -n "$ADMIN_PASSWORD"| md5sum | cut -d ' ' -f 1)
