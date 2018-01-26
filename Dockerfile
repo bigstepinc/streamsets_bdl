@@ -35,38 +35,38 @@ ARG SDC_VERSION=3.0.3.0
 # SDC_LOG is an optional volume for file based logs.
 # SDC_RESOURCES is where resource files such as runtime:conf resources and Hadoop configuration can be placed.
 # STREAMSETS_LIBRARIES_EXTRA_DIR is where extra libraries such as JDBC drivers should go.
-ENV SDC_DATA=/streamsets/data \
-    SDC_DIST="/streamsets/streamsets-datacollector-${SDC_VERSION}" \
-    SDC_LOG=/streamsets/logs \
-    SDC_RESOURCES=/streamsets/resources \
-    SDC_CONF="/streamsets/streamsets-datacollector-${SDC_VERSION}/etc" 
-ENV STREAMSETS_LIBRARIES_EXTRA_DIR="${SDC_DIST}/streamsets-libs-extras"
+##ENV SDC_DATA=/streamsets/data \
+##    SDC_DIST="/streamsets/streamsets-datacollector-${SDC_VERSION}" \
+##    SDC_LOG=/streamsets/logs \
+##    SDC_RESOURCES=/streamsets/resources \
+##    SDC_CONF="/streamsets/streamsets-datacollector-${SDC_VERSION}/etc" 
+##ENV STREAMSETS_LIBRARIES_EXTRA_DIR="${SDC_DIST}/streamsets-libs-extras"
 
 #RUN addgroup -S -g ${SDC_UID} ${SDC_USER} && \
 #    adduser -S -u ${SDC_UID} -G ${SDC_USER} ${SDC_USER}
-RUN mkdir /streamsets/
+##RUN mkdir /streamsets/
 
 RUN cd /tmp && \
-    curl -o /tmp/sdc.tgz -L "${SDC_URL}" && \
-    mkdir /streamsets/streamsets-datacollector-${SDC_VERSION} && \
-    tar xzf /tmp/sdc.tgz --strip-components 1 -C /streamsets/streamsets-datacollector-${SDC_VERSION} && \
-    rm -rf /tmp/sdc.tgz
+    curl -o /tmp/sdc.tgz -L "${SDC_URL}"
+##    mkdir /streamsets/streamsets-datacollector-${SDC_VERSION} && \
+##    tar xzf /tmp/sdc.tgz --strip-components 1 -C /streamsets/streamsets-datacollector-${SDC_VERSION} && \
+##    rm -rf /tmp/sdc.tgz
 
 # Add logging to stdout to make logs visible through `docker logs`.
-RUN sed -i 's|INFO, streamsets|INFO, streamsets,stdout|' "${SDC_DIST}/etc/sdc-log4j.properties"
+##RUN sed -i 's|INFO, streamsets|INFO, streamsets,stdout|' "${SDC_DIST}/etc/sdc-log4j.properties"
 
 # Create necessary directories.
-RUN mkdir -p /mnt \
-    "${SDC_DATA}" \
-    "${SDC_LOG}" \
-    "${SDC_RESOURCES}" \
-    "${SDC_CONF}"
+##RUN mkdir -p /mnt \
+##    "${SDC_DATA}" \
+##    "${SDC_LOG}" \
+##    "${SDC_RESOURCES}" \
+##    "${SDC_CONF}"
 
 # Move configuration to /etc/sdc
 #RUN mv "${SDC_DIST}/etc" "${SDC_CONF}"
 
 # Use short option -s as long option --status is not supported on alpine linux.
-RUN sed -i 's|--status|-s|' "${SDC_DIST}/libexec/_stagelibs"
+##RUN sed -i 's|--status|-s|' "${SDC_DIST}/libexec/_stagelibs"
 
 # Setup filesystem permissions.
 #RUN chown -R "${SDC_USER}:${SDC_USER}" "${SDC_DIST}/streamsets-libs" \
@@ -77,12 +77,12 @@ RUN sed -i 's|--status|-s|' "${SDC_DIST}/libexec/_stagelibs"
 #    "${STREAMSETS_LIBRARIES_EXTRA_DIR}"
 
 #USER ${SDC_USER}
-RUN chown -R "root:root" "${SDC_DIST}/streamsets-libs" \
-    "${SDC_CONF}" \
-    "${SDC_DATA}" \
-    "${SDC_LOG}" \
-    "${SDC_RESOURCES}" \
-    "${STREAMSETS_LIBRARIES_EXTRA_DIR}"
+##RUN chown -R "root:root" "${SDC_DIST}/streamsets-libs" \
+##    "${SDC_CONF}" \
+##    "${SDC_DATA}" \
+##    "${SDC_LOG}" \
+##    "${SDC_RESOURCES}" \
+##    "${STREAMSETS_LIBRARIES_EXTRA_DIR}"
 USER root
 
 EXPOSE 18630
