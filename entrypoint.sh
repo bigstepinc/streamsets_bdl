@@ -7,7 +7,7 @@ set_conf() {
     echo "set_conf requires two arguments: <key> <value>"
     exit 1
   fi
-
+}
 if [ "$CONTAINER_DIR" != "" ]; then
   export SDC_DATA="${CONTAINER_DIR}/data" 
   export SDC_DIST="${CONTAINER_DIR}/streamsets-datacollector-${SDC_VERSION}" 
@@ -15,9 +15,7 @@ if [ "$CONTAINER_DIR" != "" ]; then
   export SDC_RESOURCES="${CONTAINER_DIR}/resources"
   export SDC_CONF="${CONTAINER_DIR}/streamsets-datacollector-${SDC_VERSION}/etc" 
   export STREAMSETS_LIBRARIES_EXTRA_DIR="${SDC_DIST}/streamsets-libs-extras"
-  
-  mkdir "${CONTAINER_DIR}"
-  
+   
   cd /tmp && \
   mkdir "${SDC_DIST}" && \
   tar xzf /tmp/sdc.tgz --strip-components 1 -C "${SDC_DIST}" && \
@@ -50,7 +48,7 @@ fi
   fi
 
   sed -i 's|^#\?\('"$1"'=\).*|\1'"$2"'|' "${SDC_CONF}/sdc.properties"
-}
+
 
 # In some environments such as Marathon $HOST and $PORT0 can be used to
 # determine the correct external URL to reach SDC.
